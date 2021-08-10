@@ -1,3 +1,4 @@
+import Boom from '@hapi/boom'
 import Hapi from '@hapi/hapi'
 import Joi from 'joi'
 
@@ -36,6 +37,27 @@ async function createUserHandler(request: Hapi.Request, h: Hapi.ResponseToolkit)
   }
 }
 
+async function getUserHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
+  const { prisma } = request.server.app
+  const userId = parseInt(request.params.userId, 10)
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId
+      }
+    })
+    if (!user) {
+      return h.response().code(404)
+    } else {
+      return h.response(user).code(200)
+    }
+  } catch(err) {
+    console.error(err)
+    return Boom.badImplementation()
+  }
+}
+
 const userInputValidator = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
@@ -60,6 +82,18 @@ const usersPlugin = {
         options: {
           validate: {
             payload: userInputValidator
+          }
+        }
+      },
+      {
+        method: 'GET',
+        path: '/users/{userId}',
+        handler: getUserHandler,
+        options: {
+          validate: {
+            params: Joi.object({
+              userId: Joi.number().integer()
+            })
           }
         }
       }
