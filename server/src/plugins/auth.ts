@@ -1,3 +1,4 @@
+import Boom from '@hapi/boom'
 import Hapi from '@hapi/hapi'
 import { TokenType, UserRole } from '@prisma/client'
 import { add } from 'date-fns'
@@ -11,7 +12,7 @@ const authPlugin: Hapi.Plugin<null> = {
     server.route([
       {
         method: 'POST',
-        path: 'login',
+        path: '/login',
         handler: loginHandler,
         options: {
           auth: false,
@@ -41,6 +42,31 @@ async function loginHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   const tokenExpiration = add(new Date(), {
     minutes: EMAIL_TOKEN_EXPIRATION_MINUTES
   })
+
+  try {
+    const createdToken = await prisma.token.create({
+      data: {
+        emailToken,
+        type: TokenType.EMAIL,
+        expiration: tokenExpiration,
+        user: {
+          connectOrCreate: {
+            create: {
+              email
+            },
+            where: {
+              email
+            }
+          }
+        }
+      }
+    })
+console.log('hoge')
+    await sendEmailToken(email, emailToken)
+    return h.response({ token: createdToken }).code(200)
+  } catch (error) {
+    return Boom.badImplementation(error.message)
+  }
 }
 
 function generateEmailToken(): string {
