@@ -1,11 +1,11 @@
 import Hapi from '@hapi/hapi'
 
 const plugin: Hapi.Plugin<undefined> = {
-  name: 'app/status',
+  name: 'app/graphql',
   register: async function(server: Hapi.Server) {
     server.route({
       method: 'GET',
-      path: '/',
+      path: '/graphql',
       handler: (request, h) => {
         return h.response({ up: true }).code(200)
       }

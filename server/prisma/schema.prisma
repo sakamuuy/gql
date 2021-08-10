@@ -96,6 +96,6 @@ enum UserRole {
 }
 
 enum TokenType {
-  EMAIL // used as a short lived token sent to the user's email
+  EMAIL
   API
 }
