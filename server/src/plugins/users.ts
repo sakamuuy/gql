@@ -58,6 +58,23 @@ async function getUserHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
   }
 }
 
+async function deleteUserHandler(request: Hapi.Request, h: Hapi.ResponseToolkit) {
+  const { prisma } = request.server.app
+  const userId = parseInt(request.params.userId, 10)
+  
+  try {
+    await prisma.user.delete({
+      where: {
+        id: userId
+      }
+    })
+    return h.response().code(204)
+  } catch (err) {
+    console.log(err)
+    return h.response().code(500)
+  }
+}
+
 const userInputValidator = Joi.object({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
@@ -93,6 +110,18 @@ const usersPlugin = {
           validate: {
             params: Joi.object({
               userId: Joi.number().integer()
+            })
+          }
+        }
+      },
+      {
+        method: 'Delete',
+        path: '/users/{userId}',
+        handler: deleteUserHandler,
+        options: {
+          validate: {
+            params: Joi.object({
+              userId: Joi.number().integer(),
             })
           }
         }
