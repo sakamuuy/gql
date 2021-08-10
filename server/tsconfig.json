@@ -8,5 +8,5 @@
     "lib": ["esnext"],
     "esModuleInterop": true
   },
-  "exclude": ["dist", "prisma"]
+  "exclude": ["dist", "prisma", "tests"]
 }

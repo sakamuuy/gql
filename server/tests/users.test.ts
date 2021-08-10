@@ -38,7 +38,6 @@ describe('POST /users - create user', () => {
       method: 'POST',
       url: '/users',
       payload: {
-        firstName: 'test-first-name',
         lastName: 'test-last-name',
         email: `test-${Date.now()}@prisma.io`,
         social: {

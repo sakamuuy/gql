@@ -5,8 +5,8 @@ const plugin: Hapi.Plugin<undefined> = {
   register: async function(server: Hapi.Server) {
     server.route({
       method: 'GET',
-      path: '/',
-      handler: (_, h) => {
+      path: '/{p*}',
+      handler: (request, h) => {
         return h.response({ up: true }).code(200)
       }
     })
